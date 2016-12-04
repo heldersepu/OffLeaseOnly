@@ -1,9 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
+using System.Collections.Generic;
 using System.Web.Http;
 
 namespace OffLeaseOnly.Controllers
@@ -11,35 +9,64 @@ namespace OffLeaseOnly.Controllers
     public class ScrapeController : ApiController
     {
         const string URL = "http://www.offleaseonly.com/used-cars/type_used/page_{0}/";
-        public Dictionary<string, int> Get()
+        public Dictionary<string, Car> Get()
         {
-            var cars = new Dictionary<string, int>();
+            var cars = new Dictionary<string, Car>();
             var web = new HtmlWeb();
-            for (int i = 1; i < 10; i++)
+            List<string> makes = null;
+            int max = 5;
+            for (int i = 1; i < max; i++)
             {
                 var doc = web.Load(string.Format(URL, i));
-                var vehicles = doc.DocumentNode.DescendantsWithClass("div", "vehicle-listing");
+                var vehicles = doc.DocumentNode.ChildNodes("div", "vehicle-listing");
+                if (i == 1)
+                {
+                    makes = doc.DocumentNode.ChildNode("div", "search-by-make").GetOptionValues(1);
+                    string maxpage = doc.DocumentNode.ChildNode("div", "current-page").InnerText;
+                    max = Int32.Parse(maxpage.Split(';').Last()) + 1;
+                }
                 foreach (var veh in vehicles)
                 {
-                    var car = GetCar(veh);
-                    if (car.vin != null)
-                        cars.Add(car.vin, 0);
+                    try
+                    {
+                        var car = GetCar(veh, makes);
+                        if (car.vin != null && !cars.ContainsKey(car.vin))
+                            cars.Add(car.vin, car);
+                    }
+                    catch  { }
                 }
             }
+
             return cars;
         }
 
-        private Car GetCar(HtmlNode vehNode)
+        private Car GetCar(HtmlNode vehNode, List<string> makes)
         {
             var car = new Car();
-            var vinObj = vehNode.DescendantsWithClass("div", "second-half").FirstOrDefault();
-            if (vinObj != null)
+            var firObj = vehNode.ChildNode("div", "first-half");
+            var secObj = vehNode.ChildNode("div", "second-half");
+            if (firObj != null && secObj != null)
             {
-                var vinContainer = vinObj.DescendantsWithClass("div", "container").Skip(2).FirstOrDefault();
+                var vinContainer = secObj.ChildNode("div", "container", 2);
                 if (vinContainer != null)
                 {
-                    car.vin = vinContainer.DescendantsWithClass("span", "spec-data").FirstOrDefault().InnerText;
+                    car.vin = vinContainer.ChildNode("span", "spec-data")?.InnerText;
+                    car.title = vehNode.ChildNode("div", "vehicle-title-wrap")?.ChildNode("h6")?.InnerText;
+                    car.price = Int32.Parse(vehNode.ChildNode("span", "pricing-ourprice", 2)?.InnerText?.Replace(",", "")?.Replace("$", ""));
 
+                    car.trans = firObj.ChildNode("div", "container", 0)?.ChildNode("span", "spec-data")?.InnerText;
+                    car.mileage = Int32.Parse(firObj.ChildNode("div", "container", 1)?.ChildNode("span", "spec-data")?.InnerText?.Replace(",",""));
+                    car.eng = firObj.ChildNode("div", "container", 2)?.ChildNode("span", "spec-data")?.InnerText;
+                    car.color = secObj.ChildNode("div", "container", 0)?.ChildNode("span", "spec-data")?.InnerText;
+                    car.stockNum = secObj.ChildNode("div", "container", 1)?.ChildNode("span", "spec-data")?.InnerText;
+
+                    var objT = car.title.Split(' ');
+                    car.year = Int32.Parse(objT[0]);
+                    string txt = car.title.Substring(4).Trim();
+                    car.make = makes.Where(make => txt.StartsWith(make)).FirstOrDefault();
+                    car.model = txt.Replace(car.make, "").Trim();
+
+                    car.cleanCarFax = vehNode.ChildNode("div", "vehicle-comments")?.InnerText?.Contains("Clean Carfax");
                 }
             }
             return car;
