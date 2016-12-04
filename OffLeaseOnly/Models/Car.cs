@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace OffLeaseOnly.Models
+namespace OffLeaseOnly
 {
     public class Car
     {
-        string vin;
-        string color;
-
+        public string vin;
+        public string color;
+        public string cleanCarFax;
     }
 }
