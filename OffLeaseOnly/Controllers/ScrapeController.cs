@@ -3,42 +3,52 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Web.Http;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace OffLeaseOnly.Controllers
 {
     public class ScrapeController : ApiController
     {
         const string URL = "http://www.offleaseonly.com/used-cars/type_used/page_{0}/";
-        public Dictionary<string, Car> Get()
+        public List<Car> Get()
         {
-            var cars = new Dictionary<string, Car>();
+            var cars = new List<Car>();
             var web = new HtmlWeb();
             List<string> makes = null;
+            string filePath = BaseDir + @"\cars.json";
             int max = 5;
             for (int i = 1; i < max; i++)
             {
                 var doc = web.Load(string.Format(URL, i));
-                var vehicles = doc.DocumentNode.ChildNodes("div", "vehicle-listing");
                 if (i == 1)
                 {
                     makes = doc.DocumentNode.ChildNode("div", "search-by-make").GetOptionValues(1);
                     string maxpage = doc.DocumentNode.ChildNode("div", "current-page").InnerText;
                     max = Int32.Parse(maxpage.Split(';').Last()) + 1;
                 }
+                var vehicles = doc.DocumentNode.ChildNodes("div", "vehicle-listing");
                 foreach (var veh in vehicles)
                 {
                     try
                     {
                         var car = GetCar(veh, makes);
-                        if (car.vin != null && !cars.ContainsKey(car.vin))
-                            cars.Add(car.vin, car);
+                        cars.Add(car);
                     }
-                    catch  { }
+                    catch { }
                 }
+            }
+
+            using (var file = File.CreateText(filePath))
+            {
+                var serializer = new JsonSerializer();
+                serializer.Serialize(file, cars);
             }
 
             return cars;
         }
+
+        private string BaseDir { get { return AppDomain.CurrentDomain.BaseDirectory; } }
 
         private Car GetCar(HtmlNode vehNode, List<string> makes)
         {

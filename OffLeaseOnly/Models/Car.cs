@@ -15,5 +15,21 @@
         public int mileage;
         public int price;
         public int year;
+
+        public new string ToString()
+        {
+            return vin.Replace(",", ";") + "," +
+                eng.Replace(",", ";") + "," +
+                title.Replace(",", ";") + "," +
+                make.Replace(",", ";") + "," +
+                model.Replace(",", ";") + "," +
+                color.Replace(",", ";") + "," +
+                trans.Replace(",", ";") + "," +
+                stockNum.Replace(",", ";") + "," +
+                cleanCarFax.ToString() + "," +
+                mileage.ToString() + "," +
+                price.ToString() + "," +
+                year.ToString();
+        }
     }
 }
