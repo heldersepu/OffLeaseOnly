@@ -4,7 +4,6 @@
     {
         public string vin;
         public string eng;
-        public string title;
         public string make;
         public string model;
         public string color;
@@ -20,7 +19,6 @@
         {
             return vin.Replace(",", ";") + "," +
                 eng.Replace(",", ";") + "," +
-                title.Replace(",", ";") + "," +
                 make.Replace(",", ";") + "," +
                 model.Replace(",", ";") + "," +
                 color.Replace(",", ";") + "," +

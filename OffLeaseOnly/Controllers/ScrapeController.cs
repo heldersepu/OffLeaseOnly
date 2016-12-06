@@ -61,7 +61,7 @@ namespace OffLeaseOnly.Controllers
                 if (vinContainer != null)
                 {
                     car.vin = vinContainer.ChildNode("span", "spec-data")?.InnerText;
-                    car.title = vehNode.ChildNode("div", "vehicle-title-wrap")?.ChildNode("h6")?.InnerText;
+                    var title = vehNode.ChildNode("div", "vehicle-title-wrap")?.ChildNode("h6")?.InnerText;
                     car.price = Int32.Parse(vehNode.ChildNode("span", "pricing-ourprice", 2)?.InnerText?.Replace(",", "")?.Replace("$", ""));
 
                     car.trans = firObj.ChildNode("div", "container", 0)?.ChildNode("span", "spec-data")?.InnerText;
@@ -70,9 +70,9 @@ namespace OffLeaseOnly.Controllers
                     car.color = secObj.ChildNode("div", "container", 0)?.ChildNode("span", "spec-data")?.InnerText;
                     car.stockNum = secObj.ChildNode("div", "container", 1)?.ChildNode("span", "spec-data")?.InnerText;
 
-                    var objT = car.title.Split(' ');
+                    var objT = title.Split(' ');
                     car.year = Int32.Parse(objT[0]);
-                    string txt = car.title.Substring(4).Trim();
+                    string txt = title.Substring(4).Trim();
                     car.make = makes.Where(make => txt.StartsWith(make)).FirstOrDefault();
                     car.model = txt.Replace(car.make, "").Trim();
 
