@@ -8,9 +8,10 @@
         public string model;
         public string color;
         public string trans;
-        public string stockNum;
-        public bool? cleanCarFax;
+        public string stock;
+        public string image;
 
+        public int cleanCarFax = 0;
         public int mileage;
         public int price;
         public int year;
@@ -23,11 +24,17 @@
                 model.Replace(",", ";") + "," +
                 color.Replace(",", ";") + "," +
                 trans.Replace(",", ";") + "," +
-                stockNum.Replace(",", ";") + "," +
+                stock.Replace(",", ";") + "," +
                 cleanCarFax.ToString() + "," +
                 mileage.ToString() + "," +
                 price.ToString() + "," +
-                year.ToString();
+                year.ToString() + "," +
+                image;
+        }
+
+        public static string CsvHeaders()
+        {
+            return "vin,eng,make,model,color,trans,stock,cleanCarFax,mileage,price,year,image";
         }
     }
 }

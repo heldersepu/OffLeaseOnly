@@ -16,7 +16,7 @@ namespace OffLeaseOnly.Controllers
             var cars = new List<Car>();
             var web = new HtmlWeb();
             List<string> makes = null;
-            string filePath = BaseDir + @"\cars.json";
+
             int max = 5;
             for (int i = 1; i < max; i++)
             {
@@ -39,13 +39,29 @@ namespace OffLeaseOnly.Controllers
                 }
             }
 
-            using (var file = File.CreateText(filePath))
+            SaveCars(cars);
+            return cars;
+        }
+
+        private void SaveCars(List<Car> cars)
+        {
+            string filePathJson = BaseDir + @"\cars.json";
+            string filePathCsv = BaseDir + @"\cars.csv";
+
+            using (var file = File.CreateText(filePathJson))
             {
                 var serializer = new JsonSerializer();
                 serializer.Serialize(file, cars);
             }
 
-            return cars;
+            using (var file = File.CreateText(filePathCsv))
+            {
+                file.WriteLine(Car.CsvHeaders());
+                foreach (var car in cars)
+                {
+                    file.WriteLine(car.ToString());
+                }
+            }
         }
 
         private string BaseDir { get { return AppDomain.CurrentDomain.BaseDirectory; } }
@@ -68,7 +84,8 @@ namespace OffLeaseOnly.Controllers
                     car.mileage = Int32.Parse(firObj.ChildNode("div", "container", 1)?.ChildNode("span", "spec-data")?.InnerText?.Replace(",",""));
                     car.eng = firObj.ChildNode("div", "container", 2)?.ChildNode("span", "spec-data")?.InnerText;
                     car.color = secObj.ChildNode("div", "container", 0)?.ChildNode("span", "spec-data")?.InnerText;
-                    car.stockNum = secObj.ChildNode("div", "container", 1)?.ChildNode("span", "spec-data")?.InnerText;
+                    car.stock = secObj.ChildNode("div", "container", 1)?.ChildNode("span", "spec-data")?.InnerText;
+                    car.image = vehNode.ChildNode("div", "vehicle-photo")?.ChildNode("img")?.GetAttributeValue("rel", "");
 
                     var objT = title.Split(' ');
                     car.year = Int32.Parse(objT[0]);
@@ -76,7 +93,9 @@ namespace OffLeaseOnly.Controllers
                     car.make = makes.Where(make => txt.StartsWith(make)).FirstOrDefault();
                     car.model = txt.Replace(car.make, "").Trim();
 
-                    car.cleanCarFax = vehNode.ChildNode("div", "vehicle-comments")?.InnerText?.Contains("Clean Carfax");
+                    string comments = vehNode.ChildNode("div", "vehicle-comments")?.InnerText;
+                    if (!string.IsNullOrEmpty(comments))
+                        car.cleanCarFax = comments.ToUpper().Contains("CLEAN CARFAX") ? 1: 0;
                 }
             }
             return car;
