@@ -45,14 +45,8 @@ namespace OffLeaseOnly.Controllers
 
         private void SaveCars(List<Car> cars)
         {
-            string filePathJson = BaseDir + @"\cars.json";
+            string filePathJson = BaseDir + @"\cars{0}.json";
             string filePathCsv = BaseDir + @"\cars.csv";
-
-            using (var file = File.CreateText(filePathJson))
-            {
-                var serializer = new JsonSerializer();
-                serializer.Serialize(file, cars);
-            }
 
             using (var file = File.CreateText(filePathCsv))
             {
@@ -60,6 +54,17 @@ namespace OffLeaseOnly.Controllers
                 foreach (var car in cars)
                 {
                     file.WriteLine(car.ToString());
+                }
+            }
+
+            int max = 2;
+            int delta = (cars.Count / max) + 1;
+            for (int i = 0; i < max; i++)
+            {
+                using (var file = File.CreateText(String.Format(filePathJson, i)))
+                {
+                    var serializer = new JsonSerializer();
+                    serializer.Serialize(file, cars.Skip(i*delta).Take(delta));
                 }
             }
         }
