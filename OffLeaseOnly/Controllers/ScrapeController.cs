@@ -10,8 +10,9 @@ namespace OffLeaseOnly.Controllers
 {
     public class ScrapeController : ApiController
     {
-        const string URL = "http://www.offleaseonly.com/used-cars/type_used/page_{0}/";
-        public List<Car> Get()
+        const string DOMAIN = "http://www.offleaseonly.com";
+        const string URL = DOMAIN + "/used-cars/type_used/page_{0}/";
+        public List<Car> Get(int count = -1)
         {
             var cars = new List<Car>();
             var web = new HtmlWeb();
@@ -34,9 +35,12 @@ namespace OffLeaseOnly.Controllers
                     {
                         var car = GetCar(veh, makes);
                         cars.Add(car);
+                        count--;
+                        if (count == 0) break;
                     }
                     catch { }
                 }
+                if (count == 0) break;
             }
 
             SaveCars(cars);
@@ -90,7 +94,12 @@ namespace OffLeaseOnly.Controllers
                     car.eng = firObj.ChildNode("div", "container", 2)?.ChildNode("span", "spec-data")?.InnerText;
                     car.color = secObj.ChildNode("div", "container", 0)?.ChildNode("span", "spec-data")?.InnerText;
                     car.stock = secObj.ChildNode("div", "container", 1)?.ChildNode("span", "spec-data")?.InnerText;
-                    car.image = vehNode.ChildNode("div", "vehicle-photo")?.ChildNode("img")?.GetAttributeValue("rel", "");
+                    var vPhoto = vehNode.ChildNode("div", "vehicle-photo");
+                    if (vPhoto != null)
+                    {
+                        car.image = vPhoto.ChildNode("img")?.GetAttributeValue("rel", "");
+                        car.link = DOMAIN + vPhoto.ChildNode("a")?.GetAttributeValue("href", "");
+                    }
 
                     var objT = title.Split(' ');
                     car.year = Int32.Parse(objT[0]);
