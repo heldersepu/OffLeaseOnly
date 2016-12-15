@@ -43,16 +43,14 @@ namespace OffLeaseOnly.Controllers
                 if (count == 0) break;
             }
 
+            Cars.UpdateMemCache(cars);
             SaveCars(cars);
             return cars;
         }
 
         private void SaveCars(List<Car> cars)
         {
-            string filePathJson = BaseDir + @"\cars{0}.json";
-            string filePathCsv = BaseDir + @"\cars.csv";
-
-            using (var file = File.CreateText(filePathCsv))
+            using (var file = File.CreateText(Cars.CsvPath))
             {
                 file.WriteLine(Car.CsvHeaders());
                 foreach (var car in cars)
@@ -65,15 +63,13 @@ namespace OffLeaseOnly.Controllers
             int delta = (cars.Count / max) + 1;
             for (int i = 0; i < max; i++)
             {
-                using (var file = File.CreateText(String.Format(filePathJson, i)))
+                using (var file = File.CreateText(String.Format(Cars.JsonPath, i)))
                 {
                     var serializer = new JsonSerializer();
                     serializer.Serialize(file, cars.Skip(i*delta).Take(delta));
                 }
             }
         }
-
-        private string BaseDir { get { return AppDomain.CurrentDomain.BaseDirectory; } }
 
         private Car GetCar(HtmlNode vehNode, List<string> makes)
         {
