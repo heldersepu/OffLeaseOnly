@@ -1,10 +1,10 @@
 ﻿using HtmlAgilityPack;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Web.Http;
-using System.IO;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Web.Http;
 
 namespace OffLeaseOnly.Controllers
 {
@@ -12,7 +12,7 @@ namespace OffLeaseOnly.Controllers
     {
         const string DOMAIN = "http://www.offleaseonly.com";
         const string URL = DOMAIN + "/used-cars/type_used/page_{0}/";
-        public List<Car> Get(int count = -1)
+        public dynamic Get(int count = -1)
         {
             var cars = new List<Car>();
             var web = new HtmlWeb();
@@ -44,11 +44,10 @@ namespace OffLeaseOnly.Controllers
             }
 
             Cars.UpdateMemCache(cars);
-            SaveCars(cars);
-            return cars;
+            return SaveCars(cars);
         }
 
-        private void SaveCars(List<Car> cars)
+        private dynamic SaveCars(List<Car> cars)
         {
             using (var file = File.CreateText(Cars.CsvPath))
             {
@@ -69,6 +68,7 @@ namespace OffLeaseOnly.Controllers
                     serializer.Serialize(file, cars.Skip(i*delta).Take(delta));
                 }
             }
+            return Cars.Statistics(cars);
         }
 
         private Car GetCar(HtmlNode vehNode, List<string> makes)

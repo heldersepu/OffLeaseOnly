@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Caching;
 
 namespace OffLeaseOnly
@@ -44,6 +46,43 @@ namespace OffLeaseOnly
         {
             var policy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromHours(8) };
             MemoryCache.Default.Add(CAR_DATA, data, policy);
+        }
+
+        public static dynamic Statistics(List<Car> cars)
+        {
+            dynamic obj = new ExpandoObject();
+            var cleanCarFax = cars.GroupBy(x => x.cleanCarFax).ToArray();
+            var d1 = new Dictionary<int, int>();
+            foreach (var item in cleanCarFax)
+            {
+                d1.Add(item.Key, item.Count());
+            }
+            obj.cleanCarFax = d1;
+
+            var year = cars.GroupBy(x => x.year).ToArray();
+            var d2 = new Dictionary<int, int>();
+            foreach (var item in year)
+            {
+                d2.Add(item.Key, item.Count());
+            }
+            obj.year = d2;
+
+            var eng = cars.GroupBy(x => x.eng).ToArray();
+            var d3 = new Dictionary<string, int>();
+            foreach (var item in eng)
+            {
+                d3.Add(item.Key, item.Count());
+            }
+            obj.eng = d3;
+
+            var make = cars.GroupBy(x => x.make).ToArray();
+            var d4 = new Dictionary<string, int>();
+            foreach (var item in make)
+            {
+                d4.Add(item.Key, item.Count());
+            }
+            obj.make = d4;
+            return obj;
         }
     }
 }
