@@ -11,6 +11,7 @@
         public string stock;
         public string image;
         public string link;
+        public string location;
 
         public int cleanCarFax = 0;
         public int mileage;

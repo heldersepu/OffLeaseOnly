@@ -90,6 +90,7 @@ namespace OffLeaseOnly.Controllers
                     car.eng = firObj.ChildNode("div", "container", 2)?.ChildNode("span", "spec-data")?.InnerText;
                     car.color = secObj.ChildNode("div", "container", 0)?.ChildNode("span", "spec-data")?.InnerText;
                     car.stock = secObj.ChildNode("div", "container", 1)?.ChildNode("span", "spec-data")?.InnerText;
+                    car.location = vehNode.ChildNode("div", "location")?.ChildNode("span")?.GetAttributeValue("class", "");
                     var vPhoto = vehNode.ChildNode("div", "vehicle-photo");
                     if (vPhoto != null)
                     {
