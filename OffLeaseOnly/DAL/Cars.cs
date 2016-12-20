@@ -82,6 +82,14 @@ namespace OffLeaseOnly
                 d4.Add(item.Key, item.Count());
             }
             obj.make = d4;
+
+            var location = cars.GroupBy(x => x.location).ToArray();
+            var d5 = new Dictionary<string, int>();
+            foreach (var item in location)
+            {
+                d5.Add(item.Key, item.Count());
+            }
+            obj.location = d5;
             return obj;
         }
     }

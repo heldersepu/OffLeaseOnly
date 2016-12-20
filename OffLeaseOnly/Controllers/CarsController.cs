@@ -10,7 +10,7 @@ namespace OffLeaseOnly.Controllers
         // GET: api/Cars
         public IEnumerable<Car> Get()
         {
-            return Cars.Data.Take(10);
+            return Cars.Statistics(Cars.Data);
         }
 
         // GET: api/Cars?vin=1235
