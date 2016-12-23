@@ -54,41 +54,34 @@ namespace OffLeaseOnly
             var cleanCarFax = cars.GroupBy(x => x.cleanCarFax).ToArray();
             var d1 = new Dictionary<int, int>();
             foreach (var item in cleanCarFax)
-            {
                 d1.Add(item.Key, item.Count());
-            }
             obj.cleanCarFax = d1;
 
             var year = cars.GroupBy(x => x.year).ToArray();
             var d2 = new Dictionary<int, int>();
             foreach (var item in year)
-            {
                 d2.Add(item.Key, item.Count());
-            }
             obj.year = d2;
 
             var eng = cars.GroupBy(x => x.eng).ToArray();
             var d3 = new Dictionary<string, int>();
             foreach (var item in eng)
-            {
-                d3.Add(item.Key, item.Count());
-            }
+                if (item.Key != null)
+                    d3.Add(item.Key, item.Count());
             obj.eng = d3;
 
             var make = cars.GroupBy(x => x.make).ToArray();
             var d4 = new Dictionary<string, int>();
             foreach (var item in make)
-            {
-                d4.Add(item.Key, item.Count());
-            }
+                if (item.Key != null)
+                    d4.Add(item.Key, item.Count());
             obj.make = d4;
 
             var location = cars.GroupBy(x => x.location).ToArray();
             var d5 = new Dictionary<string, int>();
             foreach (var item in location)
-            {
-                d5.Add(item.Key, item.Count());
-            }
+                if (item.Key != null)
+                    d5.Add(item.Key, item.Count());
             obj.location = d5;
             return obj;
         }
