@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace OffLeaseOnly.Controllers
@@ -12,6 +13,24 @@ namespace OffLeaseOnly.Controllers
     {
         const string DOMAIN = "http://www.offleaseonly.com";
         const string URL = DOMAIN + "/used-cars/type_used/page_{0}/";
+
+        public bool Post()
+        {
+            bool start = true;
+            var allfiles = Directory.GetFiles(Cars.BaseDir, "cars?.json");
+            foreach (var path in allfiles)
+            {
+                if (File.GetLastWriteTime(path) > DateTime.Now.AddHours(-2))
+                {
+                    start = false;
+                    break;
+                }
+            }
+            if (start)
+                Task.Factory.StartNew(() => Get());
+            return start;
+        }
+
         public dynamic Get(int count = -1)
         {
             var cars = new List<Car>();

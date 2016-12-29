@@ -11,7 +11,7 @@ namespace OffLeaseOnly
     public static class Cars
     {
         private static string CAR_DATA = "CarData";
-        private static string BaseDir { get { return AppDomain.CurrentDomain.BaseDirectory; } }
+        public static string BaseDir { get { return AppDomain.CurrentDomain.BaseDirectory; } }
 
         public static string JsonPath = BaseDir + @"\cars{0}.json";
         public static string CsvPath = BaseDir + @"\cars.csv";
