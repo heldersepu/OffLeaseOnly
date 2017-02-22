@@ -52,11 +52,11 @@ namespace OffLeaseOnly
         {
             dynamic obj = new ExpandoObject();
 
-            obj.cleanCarFax = cars.GroupBy(x => x.cleanCarFax).ToDictionary(p => p.Key, p =>p.Count());
-            obj.year = cars.GroupBy(x => x.year).ToDictionary(p => p.Key, p => p.Count());
-            obj.eng = cars.GroupBy(x => x.eng).ToDictionary(p => p.Key, p => p.Count());
-            obj.make = cars.GroupBy(x => x.make).ToDictionary(p => p.Key, p => p.Count());
-            obj.location = cars.GroupBy(x => x.location).ToDictionary(p => p.Key, p => p.Count());
+            obj.cleanCarFax = cars.GroupBy(x => x.cleanCarFax).ToDict();
+            obj.year = cars.GroupBy(x => x.year).ToDict();
+            obj.eng = cars.GroupBy(x => x.eng).ToDict();
+            obj.make = cars.GroupBy(x => x.make).ToDict();
+            obj.location = cars.GroupBy(x => x.location).ToDict();
 
             return obj;
         }
