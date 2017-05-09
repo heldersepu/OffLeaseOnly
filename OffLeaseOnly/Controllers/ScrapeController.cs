@@ -17,7 +17,7 @@ namespace OffLeaseOnly.Controllers
         public bool Post()
         {
             bool start = true;
-            var allfiles = Directory.GetFiles(Cars.BaseDir, "cars?.json");
+            var allfiles = Directory.GetFiles(Cars.BaseDir, Cars.FilesPath);
             foreach (var path in allfiles)
             {
                 if (File.GetLastWriteTime(path) > DateTime.Now.AddHours(-2))
@@ -31,7 +31,7 @@ namespace OffLeaseOnly.Controllers
             return start;
         }
 
-        public dynamic Get(int count = -1)
+        private dynamic Get(int count = -1)
         {
             var cars = new List<Car>();
             var web = new HtmlWeb();
@@ -62,31 +62,7 @@ namespace OffLeaseOnly.Controllers
                 if (count == 0) break;
             }
 
-            Cars.UpdateMemCache(cars);
-            return SaveCars(cars);
-        }
-
-        private dynamic SaveCars(List<Car> cars)
-        {
-            using (var file = File.CreateText(Cars.CsvPath))
-            {
-                file.WriteLine(Car.CsvHeaders());
-                foreach (var car in cars)
-                {
-                    file.WriteLine(car.ToString());
-                }
-            }
-
-            int max = 2;
-            int delta = (cars.Count / max) + 1;
-            for (int i = 0; i < max; i++)
-            {
-                using (var file = File.CreateText(String.Format(Cars.JsonPath, i)))
-                {
-                    var serializer = new JsonSerializer();
-                    serializer.Serialize(file, cars.Skip(i*delta).Take(delta));
-                }
-            }
+            Cars.UpdateMemCache(cars, 2);
             return Cars.Statistics(cars);
         }
 

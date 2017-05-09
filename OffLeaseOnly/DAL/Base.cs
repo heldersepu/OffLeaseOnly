@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Caching;
 
 namespace OffLeaseOnly
@@ -16,7 +17,7 @@ namespace OffLeaseOnly
             }
         }
 
-        public static string MemKey
+        private static string MemKey
         {
             get
             {
@@ -24,37 +25,53 @@ namespace OffLeaseOnly
             }
         }
 
-        public static List<T> Data
+        private static List<T> ReadJson(string files)
         {
-            get
+            var data = new List<T>();
+            var allfiles = Directory.GetFiles(BaseDir, files);
+            foreach (var path in allfiles)
+                data.AddRange(JsonConvert.DeserializeObject<List<T>>(File.ReadAllText(path)));
+            UpdateMemCache(data);
+            return data;
+        }
+
+        private static void Save(List<T> data, int max)
+        {
+            using (var file = File.CreateText(Cars.CsvPath))
             {
-                var data = new List<T>();
-                var memCache = MemoryCache.Default.Get(MemKey);
-                if (memCache == null)
-                    return ReadJson;
-                else
-                    return (List<T>)memCache;
+                file.WriteLine(Car.CsvHeaders());
+                foreach (var car in data)
+                {
+                    file.WriteLine(car.ToString());
+                }
+            }
+
+            int delta = (data.Count / max) + 1;
+            for (int i = 0; i < max; i++)
+            {
+                using (var file = File.CreateText(String.Format(Cars.JsonPath, i)))
+                {
+                    var serializer = new JsonSerializer();
+                    serializer.Serialize(file, data.Skip(i * delta).Take(delta));
+                }
             }
         }
 
-        public static List<T> ReadJson
+        protected static List<T> JsonData(string files)
         {
-            get
-            {
-                var data = new List<T>();
-                var allfiles = Directory.GetFiles(BaseDir, "cars?.json");
-                foreach (var path in allfiles)
-                    data.AddRange(JsonConvert.DeserializeObject<List<T>>(File.ReadAllText(path)));
-                UpdateMemCache(data);
-                return data;
-            }
+            var data = new List<T>();
+            var memCache = MemoryCache.Default.Get(MemKey);
+            if (memCache == null)
+                return ReadJson(files);
+            else
+                return (List<T>)memCache;
         }
 
-        public static void UpdateMemCache(List<T> data)
+        public static void UpdateMemCache(List<T> data, int max = 0)
         {
             var policy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromHours(8) };
             MemoryCache.Default.Add(MemKey, data, policy);
+            if (max > 0) Save(data, max);
         }
-
     }
 }

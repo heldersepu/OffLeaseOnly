@@ -118,12 +118,14 @@
     <Compile Include="Controllers\ScrapeController.cs" />
     <Compile Include="DAL\Base.cs" />
     <Compile Include="DAL\Cars.cs" />
+    <Compile Include="DAL\Prices.cs" />
     <Compile Include="Extensions\HtmlNodeExtension.cs" />
     <Compile Include="Extensions\IEnumerableExtension.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Car.cs" />
+    <Compile Include="Models\PriceHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
