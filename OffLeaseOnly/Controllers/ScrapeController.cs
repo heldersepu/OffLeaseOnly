@@ -44,7 +44,7 @@ namespace OffLeaseOnly.Controllers
                 {
                     makes = doc.DocumentNode.ChildNode("div", "search-by-make").GetOptionValues(1);
                     string maxpage = doc.DocumentNode.ChildNode("div", "current-page").InnerText;
-                    max = Int32.Parse(maxpage.Split(';').Last()) + 1;
+                    max = int.Parse(maxpage.Split(';').Last()) + 1;
                 }
                 var vehicles = doc.DocumentNode.ChildNodes("div", "vehicle-listing");
                 foreach (var veh in vehicles)
@@ -61,8 +61,33 @@ namespace OffLeaseOnly.Controllers
                 if (count == 0) break;
             }
 
-            if (cars.Count > 0) cars.Save(2);
+            if (cars.Count > 0)
+            {
+                cars.Save(2);
+                AddPrices(cars);
+            }
             return cars.Statistics();
+        }
+
+        private void AddPrices(List<Car> cars)
+        {
+            var prices = Prices.Data;
+            bool changed = false;
+            foreach (var car in cars)
+            {
+                var p = prices.Where(x => x.vin == car.vin).FirstOrDefault();
+                if (p == null)
+                {
+                    prices.Add(new PriceHistory(car.vin, car.price));
+                    changed = true;
+                }
+                else if (!p.price.ContainsKey(car.price))
+                {
+                    p.price.Add(car.price, DateTime.Now);
+                    changed = true;
+                }
+            }
+            if (changed) prices.Save();
         }
 
         private Car GetCar(HtmlNode vehNode, List<string> makes)

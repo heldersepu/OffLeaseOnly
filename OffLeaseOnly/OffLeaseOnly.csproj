@@ -119,6 +119,7 @@
     <Compile Include="DAL\Base.cs" />
     <Compile Include="DAL\Cars.cs" />
     <Compile Include="DAL\Prices.cs" />
+    <Compile Include="Extensions\PricesExtension.cs" />
     <Compile Include="Extensions\CarsExtension.cs" />
     <Compile Include="Extensions\HtmlNodeExtension.cs" />
     <Compile Include="Extensions\IEnumerableExtension.cs" />
