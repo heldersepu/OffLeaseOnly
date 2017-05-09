@@ -7,7 +7,7 @@ namespace OffLeaseOnly.Controllers
         // GET: api/Cars
         public dynamic Get()
         {
-            return Cars.Statistics(Cars.Data);
+            return Cars.Data.Statistics();
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using HtmlAgilityPack;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,7 +30,7 @@ namespace OffLeaseOnly.Controllers
             return start;
         }
 
-        private dynamic Get(int count = -1)
+        public Stats Get(int count = -1)
         {
             var cars = new List<Car>();
             var web = new HtmlWeb();
@@ -63,7 +62,7 @@ namespace OffLeaseOnly.Controllers
             }
 
             Cars.UpdateMemCache(cars, 2);
-            return Cars.Statistics(cars);
+            return cars.Statistics();
         }
 
         private Car GetCar(HtmlNode vehNode, List<string> makes)
