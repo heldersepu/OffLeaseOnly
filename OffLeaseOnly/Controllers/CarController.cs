@@ -7,9 +7,12 @@ namespace OffLeaseOnly.Controllers
     public class CarController : ApiController
     {
         // GET: api/Cars?vin=1235
-        public Car Get(string vin)
+        public CarData Get(string vin)
         {
-            return Cars.Data.Where(x => x.vin == vin).FirstOrDefault();
+            var c = new CarData();
+            c.car = Cars.Data.Where(x => x.vin == vin).FirstOrDefault();
+            c.value = Prices.Data.Where(x => x.vin == vin).FirstOrDefault();
+            return c;
         }
     }
 }
