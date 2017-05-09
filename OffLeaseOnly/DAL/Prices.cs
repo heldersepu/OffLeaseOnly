@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace OffLeaseOnly.DAL
+namespace OffLeaseOnly
 {
     public class Prices : Base<PriceHistory>
     {
