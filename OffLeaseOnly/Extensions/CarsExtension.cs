@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace OffLeaseOnly
@@ -16,6 +19,29 @@ namespace OffLeaseOnly
             obj.location = cars.GroupBy(x => x.location).ToDict();
 
             return obj;
+        }
+
+        public static void Save(this List<Car> cars, int max)
+        {
+            Cars.UpdateMemCache(cars);
+            using (var file = File.CreateText(Cars.CsvPath))
+            {
+                file.WriteLine(Car.CsvHeaders());
+                foreach (var car in cars)
+                {
+                    file.WriteLine(car.ToString());
+                }
+            }
+
+            int delta = (cars.Count / max) + 1;
+            for (int i = 0; i < max; i++)
+            {
+                using (var file = File.CreateText(String.Format(Cars.JsonPath, i)))
+                {
+                    var serializer = new JsonSerializer();
+                    serializer.Serialize(file, cars.Skip(i * delta).Take(delta));
+                }
+            }
         }
     }
 }

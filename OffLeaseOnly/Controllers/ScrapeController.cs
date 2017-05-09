@@ -61,7 +61,7 @@ namespace OffLeaseOnly.Controllers
                 if (count == 0) break;
             }
 
-            Cars.UpdateMemCache(cars, 2);
+            if (cars.Count > 0) cars.Save(2);
             return cars.Statistics();
         }
 

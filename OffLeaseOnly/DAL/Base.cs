@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Caching;
 
 namespace OffLeaseOnly
@@ -35,28 +34,6 @@ namespace OffLeaseOnly
             return data;
         }
 
-        private static void Save(List<T> data, int max)
-        {
-            using (var file = File.CreateText(Cars.CsvPath))
-            {
-                file.WriteLine(Car.CsvHeaders());
-                foreach (var car in data)
-                {
-                    file.WriteLine(car.ToString());
-                }
-            }
-
-            int delta = (data.Count / max) + 1;
-            for (int i = 0; i < max; i++)
-            {
-                using (var file = File.CreateText(String.Format(Cars.JsonPath, i)))
-                {
-                    var serializer = new JsonSerializer();
-                    serializer.Serialize(file, data.Skip(i * delta).Take(delta));
-                }
-            }
-        }
-
         protected static List<T> JsonData(string files)
         {
             var data = new List<T>();
@@ -67,11 +44,10 @@ namespace OffLeaseOnly
                 return (List<T>)memCache;
         }
 
-        public static void UpdateMemCache(List<T> data, int max = 0)
+        public static void UpdateMemCache(List<T> data)
         {
             var policy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromHours(8) };
             MemoryCache.Default.Add(MemKey, data, policy);
-            if (max > 0) Save(data, max);
         }
     }
 }
