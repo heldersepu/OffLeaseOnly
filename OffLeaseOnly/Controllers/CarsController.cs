@@ -5,6 +5,7 @@ using System.Web.Http;
 
 namespace OffLeaseOnly.Controllers
 {
+    [RoutePrefix("api/Cars")]
     public class CarsController : ApiController
     {
         // GET: api/Cars?take=10&skip=0&query=
@@ -12,6 +13,17 @@ namespace OffLeaseOnly.Controllers
         public IEnumerable<Car> Get(int take, int skip, string query)
         {
             return Cars.Data.Where(query).Skip(skip).Take(take);
+        }
+
+        // GET: api/Cars/1235
+        [Route("{vin}")]
+        public CarData GetByVin(string vin)
+        {
+            return new CarData()
+            {
+                car = Cars.Data.Where(x => x.vin == vin).FirstOrDefault(),
+                value = Prices.Data.Where(x => x.vin == vin).FirstOrDefault()
+            };
         }
     }
 }
