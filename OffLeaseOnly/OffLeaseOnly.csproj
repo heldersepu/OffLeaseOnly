@@ -129,7 +129,7 @@
     <Compile Include="Models\Car.cs" />
     <Compile Include="Models\CarData.cs" />
     <Compile Include="Models\PriceHistory.cs" />
-    <Compile Include="Models\Stats.cs" />
+    <Compile Include="Models\CarStats.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
