@@ -105,6 +105,7 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="index.html" />
+    <EmbeddedResource Include="Style.css" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
