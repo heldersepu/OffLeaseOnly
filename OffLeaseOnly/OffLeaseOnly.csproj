@@ -113,7 +113,6 @@
   <ItemGroup>
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\CarController.cs" />
     <Compile Include="Controllers\StatsController.cs" />
     <Compile Include="Controllers\CarsController.cs" />
     <Compile Include="Controllers\ScrapeController.cs" />
