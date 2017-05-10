@@ -9,8 +9,8 @@ namespace OffLeaseOnly
     {
         public static Dictionary<int, int> Statistics(this List<PriceHistory> prices)
         {
-            var p = prices.Select(x => x.price.OrderBy(y => y.Value).FirstOrDefault());
-            return p.GroupBy(x => x.Key).ToDict(); ;
+            var p = prices.Select(x => x.prices.OrderByDescending(y => y.date).FirstOrDefault());
+            return p.GroupBy(x => x.price).ToDict(); ;
         }
 
         public static void Save(this List<PriceHistory> prices)

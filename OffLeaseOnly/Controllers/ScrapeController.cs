@@ -81,9 +81,9 @@ namespace OffLeaseOnly.Controllers
                     prices.Add(new PriceHistory(car.vin, car.price));
                     changed = true;
                 }
-                else if (!p.price.ContainsKey(car.price))
+                else if (!p.prices.Any(x => x.price == car.price))
                 {
-                    p.price.Add(car.price, DateTime.Now);
+                    p.prices.Add(new PriceHistory.Price(car.price));
                     changed = true;
                 }
             }
