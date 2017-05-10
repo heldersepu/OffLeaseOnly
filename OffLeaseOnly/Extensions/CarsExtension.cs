@@ -8,9 +8,9 @@ namespace OffLeaseOnly
 {
     public static class CarsExtension
     {
-        public static Stats Statistics(this List<Car> cars)
+        public static CarStats Statistics(this List<Car> cars)
         {
-            var obj = new Stats();
+            var obj = new CarStats();
 
             obj.cleanCarFax = cars.GroupBy(x => x.cleanCarFax).ToDict();
             obj.year = cars.GroupBy(x => x.year).ToDict();

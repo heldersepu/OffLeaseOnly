@@ -30,7 +30,7 @@ namespace OffLeaseOnly.Controllers
             return start;
         }
 
-        public Stats Get(int count = -1)
+        public CarStats Get(int count = -1)
         {
             var cars = new List<Car>();
             var web = new HtmlWeb();

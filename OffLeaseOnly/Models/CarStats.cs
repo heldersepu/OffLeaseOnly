@@ -2,7 +2,7 @@
 
 namespace OffLeaseOnly
 {
-    public class Stats
+    public class CarStats
     {
         public Dictionary<int, int> cleanCarFax;
         public Dictionary<int, int> year;
