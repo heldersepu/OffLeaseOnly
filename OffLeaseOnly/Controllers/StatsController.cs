@@ -3,7 +3,7 @@ using System.Web.Http;
 
 namespace OffLeaseOnly.Controllers
 {
-    [RoutePrefix("Stats")]
+    [RoutePrefix("api/Stats")]
     public class StatsController : ApiController
     {
         [HttpGet]
