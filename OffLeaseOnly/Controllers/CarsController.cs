@@ -53,7 +53,7 @@ namespace OffLeaseOnly.Controllers
         {
             var obj = new List<CarData>();
             var prices = Prices.Data.Select(x => new { x.vin, x.prices.OrderBy(y => y.date).FirstOrDefault().date });
-            var oldest10 = prices.OrderBy(y => y.date).Take(10);
+            var oldest10 = prices.Where(x => Cars.Data.Any(c => c.vin == x.vin)).OrderBy(y => y.date).Take(10);
 
             foreach (var p in oldest10)
             {
@@ -71,7 +71,7 @@ namespace OffLeaseOnly.Controllers
         public List<CarData> GetHot()
         {
             var obj = new List<CarData>();
-            var hot = Prices.Data.Where(x => x.prices.Count > 1).Take(10);
+            var hot = Prices.Data.Where(x => x.prices.Count > 1 && Cars.Data.Any(c => c.vin == x.vin)).Take(10);
 
             foreach (var p in hot)
             {
