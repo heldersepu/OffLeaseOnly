@@ -31,10 +31,31 @@ namespace OffLeaseOnly.Controllers
         public List<CarData> GetNew()
         {
             var obj = new List<CarData>();
-            var prices = Prices.Data.Select(x => new { x.vin, x.prices.OrderByDescending(y => y.date).FirstOrDefault().date });
+            var prices = Prices.Data
+                .Where(x => x.prices.Count == 1)
+                .Select(x => new { x.vin, x.prices.OrderByDescending(y => y.date).FirstOrDefault().date });
             var recent10 = prices.OrderByDescending(y => y.date).Take(10);
 
             foreach (var p in recent10)
+            {
+                obj.Add(new CarData()
+                {
+                    car = Cars.Data.Where(x => x.vin == p.vin).FirstOrDefault(),
+                    value = Prices.Data.Where(x => x.vin == p.vin).FirstOrDefault()
+                });
+            }
+            return obj;
+        }
+
+        // GET: api/Cars/old
+        [Route("old")]
+        public List<CarData> GetOld()
+        {
+            var obj = new List<CarData>();
+            var prices = Prices.Data.Select(x => new { x.vin, x.prices.OrderBy(y => y.date).FirstOrDefault().date });
+            var oldest10 = prices.OrderBy(y => y.date).Take(10);
+
+            foreach (var p in oldest10)
             {
                 obj.Add(new CarData()
                 {
