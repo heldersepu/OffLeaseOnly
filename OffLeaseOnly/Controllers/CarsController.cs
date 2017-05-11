@@ -44,5 +44,23 @@ namespace OffLeaseOnly.Controllers
             }
             return obj;
         }
+
+        // GET: api/Cars/hot
+        [Route("hot")]
+        public List<CarData> GetHot()
+        {
+            var obj = new List<CarData>();
+            var hot = Prices.Data.Where(x => x.prices.Count > 1).Take(10);
+
+            foreach (var p in hot)
+            {
+                obj.Add(new CarData()
+                {
+                    car = Cars.Data.Where(x => x.vin == p.vin).FirstOrDefault(),
+                    value = Prices.Data.Where(x => x.vin == p.vin).FirstOrDefault()
+                });
+            }
+            return obj;
+        }
     }
 }
