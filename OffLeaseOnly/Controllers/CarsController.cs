@@ -25,5 +25,24 @@ namespace OffLeaseOnly.Controllers
                 value = Prices.Data.Where(x => x.vin == vin).FirstOrDefault()
             };
         }
+
+        // GET: api/Cars/new
+        [Route("new")]
+        public List<CarData> GetNew()
+        {
+            var obj = new List<CarData>();
+            var prices = Prices.Data.Select(x => new { x.vin, x.prices.OrderByDescending(y => y.date).FirstOrDefault().date });
+            var recent10 = prices.OrderByDescending(y => y.date).Take(10);
+
+            foreach (var p in recent10)
+            {
+                obj.Add(new CarData()
+                {
+                    car = Cars.Data.Where(x => x.vin == p.vin).FirstOrDefault(),
+                    value = Prices.Data.Where(x => x.vin == p.vin).FirstOrDefault()
+                });
+            }
+            return obj;
+        }
     }
 }
