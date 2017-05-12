@@ -62,32 +62,8 @@ namespace OffLeaseOnly.Controllers
             }
 
             if (cars.Count > 0)
-            {
                 cars.Save(2);
-                AddPrices(cars);
-            }
             return cars.Statistics();
-        }
-
-        private void AddPrices(List<Car> cars)
-        {
-            var prices = Prices.Data;
-            bool changed = false;
-            foreach (var car in cars)
-            {
-                var p = prices.Where(x => x.vin == car.vin).FirstOrDefault();
-                if (p == null)
-                {
-                    prices.Add(new PriceHistory(car.vin, car.price));
-                    changed = true;
-                }
-                else if (!p.prices.Any(x => x.price == car.price))
-                {
-                    p.prices.Add(new PriceHistory.Price(car.price));
-                    changed = true;
-                }
-            }
-            if (changed) prices.Save();
         }
 
         private Car GetCar(HtmlNode vehNode, List<string> makes)

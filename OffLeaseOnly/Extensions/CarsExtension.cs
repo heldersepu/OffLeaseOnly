@@ -42,6 +42,28 @@ namespace OffLeaseOnly
                     serializer.Serialize(file, cars.Skip(i * delta).Take(delta));
                 }
             }
+            AddPrices(cars);
+        }
+
+        private static void AddPrices(List<Car> cars)
+        {
+            var prices = Prices.Data;
+            bool changed = false;
+            foreach (var car in cars)
+            {
+                var p = prices.Where(x => x.vin == car.vin).FirstOrDefault();
+                if (p == null)
+                {
+                    prices.Add(new PriceHistory(car.vin, car.price));
+                    changed = true;
+                }
+                else if (!p.prices.Any(x => x.price == car.price))
+                {
+                    p.prices.Add(new PriceHistory.Price(car.price));
+                    changed = true;
+                }
+            }
+            if (changed) prices.Save();
         }
     }
 }
