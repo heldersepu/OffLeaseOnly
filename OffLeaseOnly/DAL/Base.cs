@@ -46,7 +46,7 @@ namespace OffLeaseOnly
 
         public static void UpdateMemCache(List<T> data)
         {
-            var policy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromHours(8) };
+            var policy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(10) };
             MemoryCache.Default.Add(MemKey, data, policy);
         }
     }
