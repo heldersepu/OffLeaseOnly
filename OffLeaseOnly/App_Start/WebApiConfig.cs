@@ -10,6 +10,7 @@ namespace OffLeaseOnly
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
+            config.Formatters.Clear();
             config.Formatters.Add(new BrowserJsonFormatter());
             // Web API routes
             config.MapHttpAttributeRoutes();
@@ -20,19 +21,18 @@ namespace OffLeaseOnly
                 defaults: new { id = RouteParameter.Optional }
             );
         }
-    }
-
-    public class BrowserJsonFormatter : JsonMediaTypeFormatter
-    {
-        public BrowserJsonFormatter()
+        private class BrowserJsonFormatter : JsonMediaTypeFormatter
         {
-            this.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
-        }
+            public BrowserJsonFormatter()
+            {
+                this.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
+            }
 
-        public override void SetDefaultContentHeaders(Type type, HttpContentHeaders headers, MediaTypeHeaderValue mediaType)
-        {
-            base.SetDefaultContentHeaders(type, headers, mediaType);
-            headers.ContentType = new MediaTypeHeaderValue("application/json");
+            public override void SetDefaultContentHeaders(Type type, HttpContentHeaders headers, MediaTypeHeaderValue mediaType)
+            {
+                base.SetDefaultContentHeaders(type, headers, mediaType);
+                headers.ContentType = new MediaTypeHeaderValue("application/json");
+            }
         }
     }
 }
