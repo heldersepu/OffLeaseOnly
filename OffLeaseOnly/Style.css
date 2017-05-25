@@ -1,3 +1,7 @@
-﻿#resource_Scrape, #input_apiKey {
+﻿#resource_Scrape, #input_apiKey,
+option[value="application/xml"],
+option[value="text/xml"],
+option[value="text/html"]
+{
     display: none;
 }
