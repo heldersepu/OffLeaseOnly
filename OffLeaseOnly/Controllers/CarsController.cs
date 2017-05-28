@@ -10,7 +10,7 @@ namespace OffLeaseOnly.Controllers
     {
         // GET: api/Cars?take=10&skip=0&query=
         // GET: api/cars?take=100&skip=0&query=price<19000+AND+mileage<12000+AND+cleanCarFax=1+AND+eng="4"+AND+make!="Kia"
-        public IEnumerable<Car> Get(int take, int skip, string query)
+        public IEnumerable<Car> Get(string query, int skip = 0, int take = 10)
         {
             return Cars.Data.Where(query).Skip(skip).Take(take);
         }
@@ -28,13 +28,13 @@ namespace OffLeaseOnly.Controllers
 
         // GET: api/Cars/new
         [Route("new")]
-        public List<CarData> GetNew()
+        public List<CarData> GetNew(int take = 10)
         {
             var obj = new List<CarData>();
             var prices = Prices.Data
                 .Where(x => x.prices.Count == 1)
                 .Select(x => new { x.vin, x.prices.OrderByDescending(y => y.date).FirstOrDefault().date });
-            var recent10 = prices.OrderByDescending(y => y.date).Take(10);
+            var recent10 = prices.OrderByDescending(y => y.date).Take(take);
 
             foreach (var p in recent10)
             {
@@ -49,11 +49,11 @@ namespace OffLeaseOnly.Controllers
 
         // GET: api/Cars/old
         [Route("old")]
-        public List<CarData> GetOld()
+        public List<CarData> GetOld(int take = 10)
         {
             var obj = new List<CarData>();
             var prices = Prices.Data.Select(x => new { x.vin, x.prices.OrderBy(y => y.date).FirstOrDefault().date });
-            var oldest10 = prices.Where(x => Cars.Data.Any(c => c.vin == x.vin)).OrderBy(y => y.date).Take(10);
+            var oldest10 = prices.Where(x => Cars.Data.Any(c => c.vin == x.vin)).OrderBy(y => y.date).Take(take);
 
             foreach (var p in oldest10)
             {
@@ -68,10 +68,10 @@ namespace OffLeaseOnly.Controllers
 
         // GET: api/Cars/hot
         [Route("hot")]
-        public List<CarData> GetHot()
+        public List<CarData> GetHot(int take = 10)
         {
             var obj = new List<CarData>();
-            var hot = Prices.Data.Where(x => x.prices.Count > 1 && Cars.Data.Any(c => c.vin == x.vin)).Take(10);
+            var hot = Prices.Data.Where(x => x.prices.Count > 1 && Cars.Data.Any(c => c.vin == x.vin)).Take(take);
 
             foreach (var p in hot)
             {
