@@ -28,13 +28,13 @@ namespace OffLeaseOnly.Controllers
 
         // GET: api/Cars/new
         [Route("new")]
-        public List<CarData> GetNew(int take = 10)
+        public List<CarData> GetNew(string query = "", int skip = 0, int take = 10)
         {
             var obj = new List<CarData>();
             var prices = Prices.Data
                 .Where(x => x.prices.Count == 1)
                 .Select(x => new { x.vin, x.prices.OrderByDescending(y => y.date).FirstOrDefault().date });
-            var recent10 = prices.OrderByDescending(y => y.date).Take(take);
+            var recent10 = prices.OrderByDescending(y => y.date).Where(query).Skip(skip).Take(take);
 
             foreach (var p in recent10)
             {
@@ -49,13 +49,13 @@ namespace OffLeaseOnly.Controllers
 
         // GET: api/Cars/old
         [Route("old")]
-        public List<CarData> GetOld(int take = 10)
+        public List<CarData> GetOld(string query = "", int skip = 0, int take = 10)
         {
             var obj = new List<CarData>();
             var prices = Prices.Data.Select(x => new { x.vin, x.prices.OrderBy(y => y.date).FirstOrDefault().date });
-            var oldest10 = prices.Where(x => Cars.Data.Any(c => c.vin == x.vin)).OrderBy(y => y.date).Take(take);
+            var oldest = prices.Where(x => Cars.Data.Any(c => c.vin == x.vin)).OrderBy(y => y.date);
 
-            foreach (var p in oldest10)
+            foreach (var p in oldest.Where(query).Skip(skip).Take(take))
             {
                 obj.Add(new CarData()
                 {
@@ -68,12 +68,12 @@ namespace OffLeaseOnly.Controllers
 
         // GET: api/Cars/hot
         [Route("hot")]
-        public List<CarData> GetHot(int take = 10)
+        public List<CarData> GetHot(string query = "", int skip = 0, int take = 10)
         {
             var obj = new List<CarData>();
-            var hot = Prices.Data.Where(x => x.prices.Count > 1 && Cars.Data.Any(c => c.vin == x.vin)).Take(take);
+            var hot = Prices.Data.Where(x => x.prices.Count > 1 && Cars.Data.Any(c => c.vin == x.vin));
 
-            foreach (var p in hot)
+            foreach (var p in hot.Where(query).Skip(skip).Take(take))
             {
                 obj.Add(new CarData()
                 {
