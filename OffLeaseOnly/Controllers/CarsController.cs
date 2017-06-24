@@ -28,13 +28,13 @@ namespace OffLeaseOnly.Controllers
 
         // GET: api/Cars/new
         [Route("new")]
-        public List<CarData> GetNew(string query = "1==1", int skip = 0, int take = 10)
+        public IEnumerable<CarData> GetNew(string query = "1==1", int skip = 0, int take = 10)
         {
             var obj = new List<CarData>();
             var prices = Prices.Data
                 .Where(x => x.prices.Count == 1)
                 .Select(x => new { x.vin, x.prices.OrderByDescending(y => y.date).FirstOrDefault().date });
-            var recent10 = prices.OrderByDescending(y => y.date).Where(query).Skip(skip).Take(take);
+            var recent10 = prices.OrderByDescending(y => y.date);
 
             foreach (var p in recent10)
             {
@@ -44,18 +44,18 @@ namespace OffLeaseOnly.Controllers
                     value = Prices.Data.Where(x => x.vin == p.vin).FirstOrDefault()
                 });
             }
-            return obj;
+            return obj.Where(query).Skip(skip).Take(take);
         }
 
         // GET: api/Cars/old
         [Route("old")]
-        public List<CarData> GetOld(string query = "1==1", int skip = 0, int take = 10)
+        public IEnumerable<CarData> GetOld(string query = "1==1", int skip = 0, int take = 10)
         {
             var obj = new List<CarData>();
             var prices = Prices.Data.Select(x => new { x.vin, x.prices.OrderBy(y => y.date).FirstOrDefault().date });
             var oldest = prices.Where(x => Cars.Data.Any(c => c.vin == x.vin)).OrderBy(y => y.date);
 
-            foreach (var p in oldest.Where(query).Skip(skip).Take(take))
+            foreach (var p in oldest)
             {
                 obj.Add(new CarData()
                 {
@@ -63,17 +63,17 @@ namespace OffLeaseOnly.Controllers
                     value = Prices.Data.Where(x => x.vin == p.vin).FirstOrDefault()
                 });
             }
-            return obj;
+            return obj.Where(query).Skip(skip).Take(take);
         }
 
         // GET: api/Cars/hot
         [Route("hot")]
-        public List<CarData> GetHot(string query = "1==1", int skip = 0, int take = 10)
+        public IEnumerable<CarData> GetHot(string query = "1==1", int skip = 0, int take = 10)
         {
             var obj = new List<CarData>();
             var hot = Prices.Data.Where(x => x.prices.Count > 1 && Cars.Data.Any(c => c.vin == x.vin));
 
-            foreach (var p in hot.Where(query).Skip(skip).Take(take))
+            foreach (var p in hot)
             {
                 obj.Add(new CarData()
                 {
@@ -81,7 +81,7 @@ namespace OffLeaseOnly.Controllers
                     value = Prices.Data.Where(x => x.vin == p.vin).FirstOrDefault()
                 });
             }
-            return obj;
+            return obj.Where(query).Skip(skip).Take(take);
         }
     }
 }
