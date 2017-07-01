@@ -1,7 +1,13 @@
+using System;
+using System.Linq;
 using System.Web.Http;
+using System.Web.Http.Description;
+using System.Web.Http.Routing.Constraints;
+
 using WebActivatorEx;
 using OffLeaseOnly;
 using Swashbuckle.Application;
+using Swashbuckle.Swagger;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -34,6 +40,10 @@ namespace OffLeaseOnly
                         //
                         c.SingleApiVersion("v1", "OffLeaseOnly");
 
+                        // If you want the output Swagger docs to be indented properly, enable the "PrettyPrint" option.
+                        //
+                        //c.PrettyPrint();
+
                         // If your API has multiple versions, use "MultipleApiVersions" instead of "SingleApiVersion".
                         // In this case, you must provide a lambda that tells Swashbuckle which actions should be
                         // included in the docs for a given API version. Like "SingleApiVersion", each call to "Version"
@@ -57,7 +67,7 @@ namespace OffLeaseOnly
                         //c.BasicAuth("basic")
                         //    .Description("Basic HTTP Authentication");
                         //
-						// NOTE: You must also configure 'EnableApiKeySupport' below in the SwaggerUI section
+                        // NOTE: You must also configure 'EnableApiKeySupport' below in the SwaggerUI section
                         //c.ApiKey("apiKey")
                         //    .Description("API Key Authentication")
                         //    .Name("apiKey")
@@ -77,6 +87,9 @@ namespace OffLeaseOnly
                         // Set this flag to omit descriptions for any actions decorated with the Obsolete attribute
                         //c.IgnoreObsoleteActions();
 
+                        // Comment this setting to disable Access-Control-Allow-Origin
+                        c.AccessControlAllowOrigin("*");
+
                         // Each operation be assigned one or more tags which are then used by consumers for various reasons.
                         // For example, the swagger-ui groups operations according to the first tag of each operation.
                         // By default, this will be controller name but you can use the "GroupActionsBy" option to
@@ -92,12 +105,15 @@ namespace OffLeaseOnly
                         //
                         //c.OrderActionGroupsBy(new DescendingAlphabeticComparer());
 
-                        // If you annotate Controllers and API Types with
-                        // Xml comments (http://msdn.microsoft.com/en-us/library/b2s063f7(v=vs.110).aspx), you can incorporate
-                        // those comments into the generated docs and UI. You can enable this by providing the path to one or
+                        // If you annotate Controllers and API Types with Xml comments:
+                        // http://msdn.microsoft.com/en-us/library/b2s063f7(v=vs.110).aspx
+                        // those comments will be incorporated into the generated docs and UI.
+                        // Just make sure your comment file(s) have extension .XML
+                        // You can add individual files by providing the path to one or
                         // more Xml comment files.
                         //
-                        //c.IncludeXmlComments(GetXmlCommentsPath());
+                        //c.IncludeXmlComments(AppDomain.CurrentDomain.BaseDirectory + "file.ext");
+                        c.IncludeAllXmlComments(thisAssembly, AppDomain.CurrentDomain.BaseDirectory);
 
                         // Swashbuckle makes a best attempt at generating Swagger compliant JSON schemas for the various types
                         // exposed in your API. However, there may be occasions when more control of the output is needed.
@@ -175,6 +191,11 @@ namespace OffLeaseOnly
                     })
                 .EnableSwaggerUi(c =>
                     {
+                        // Use the "DocumentTitle" option to change the Document title.
+                        // Very helpful when you have multiple Swagger pages open, to tell them apart.
+                        //
+                        //c.DocumentTitle("My Swagger UI");
+
                         // Use the "InjectStylesheet" option to enrich the UI with one or more additional CSS stylesheets.
                         // The file must be included in your project as an "Embedded Resource", and then the resource's
                         // "Logical Name" is passed to the method as shown below.
@@ -216,7 +237,7 @@ namespace OffLeaseOnly
                         // in your project as an "Embedded Resource", and then the resource's "Logical Name" is passed to
                         // the method as shown below.
                         //
-                        //c.CustomAsset("index", containingAssembly, "YourWebApiProject.SwaggerExtensions.index.html");
+                        //c.CustomAsset("index", thisAssembly, "YourWebApiProject.SwaggerExtensions.index.html");
 
                         // If your API has multiple versions and you've applied the MultipleApiVersions setting
                         // as described above, you can also enable a select box in the swagger-ui, that displays
@@ -241,6 +262,40 @@ namespace OffLeaseOnly
                         //
                         //c.EnableApiKeySupport("apiKey", "header");
                     });
+        }
+
+        private class ApplyDocumentVendorExtensions : IDocumentFilter
+        {
+            public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
+            {
+                // Include the given data type in the final SwaggerDocument
+                //
+                //schemaRegistry.GetOrRegister(typeof(ExtraType));
+            }
+        }
+
+        private class ApplySchemaVendorExtensions : ISchemaFilter
+        {
+            public void Apply(Schema schema, SchemaRegistry schemaRegistry, Type type)
+            {
+                // Modify the example values in the final SwaggerDocument
+                //
+                if (schema.properties != null)
+                {
+                    foreach (var p in schema.properties)
+                    {
+                        switch (p.Value.format)
+                        {
+                            case "int32":
+                                p.Value.example = 123;
+                                break;
+                            case "double":
+                                p.Value.example = 9858.216;
+                                break;
+                        }
+                    }
+                }
+            }
         }
     }
 }

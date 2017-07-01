@@ -1,7 +1,5 @@
-﻿#resource_Scrape, #input_apiKey,
-option[value="application/xml"],
-option[value="text/xml"],
-option[value="text/html"]
+﻿.scheme-container,
+.opblock-tag-section:nth-of-type(2)
 {
-    display: none;
+    display: none !important;
 }
