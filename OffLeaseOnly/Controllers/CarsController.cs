@@ -8,8 +8,14 @@ namespace OffLeaseOnly.Controllers
     [RoutePrefix("api/Cars")]
     public class CarsController : ApiController
     {
-        // GET: api/Cars?take=10&skip=0&query=
-        // GET: api/cars?take=100&skip=0&query=price<19000+AND+mileage<12000+AND+cleanCarFax=1+AND+eng="4"+AND+make!="Kia"
+        /// <remarks>
+        /// <h2>All electric cars less than 15K </h2>
+        /// <pre>eng="N/A" AND price &lt; 15000</pre>
+        ///
+        /// <h2>Cars under 15K and less than 12K miles with a clean carfax </h2>
+        /// <pre>price &lt; 15000 AND mileage &lt; 12000 AND cleanCarFax=1 AND eng="4"</pre>
+        ///
+        /// </remarks>
         public IEnumerable<Car> Get(string query, int skip = 0, int take = 10)
         {
             return Cars.Data.Where(query).Skip(skip).Take(take);
