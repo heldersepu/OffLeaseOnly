@@ -23,13 +23,11 @@ namespace OffLeaseOnly.Controllers
 
         // GET: api/Cars/1235
         [Route("{vin}")]
-        public CarData GetByVin(string vin)
+        public IEnumerable<CarData> GetByVin(string vin)
         {
-            return new CarData()
-            {
-                car = Cars.Data.Where(x => x.vin == vin).FirstOrDefault(),
-                value = Prices.Data.Where(x => x.vin == vin).FirstOrDefault()
-            };
+            var cars = Cars.Data.Where(x => x.vin.Contains(vin));
+            var prices = Prices.Data.Where(x => x.vin.Contains(vin));
+            return cars.Select(c => new CarData() { car = c, value = prices.First(x => x.vin == c.vin)});
         }
 
         // GET: api/Cars/new
