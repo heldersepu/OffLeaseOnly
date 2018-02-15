@@ -3,3 +3,6 @@
 {
     display: none !important;
 }
+input[placeholder=query] {
+    max-width: 100% !important;
+}
