@@ -33,9 +33,10 @@ namespace OffLeaseOnly.Controllers
 
         [HttpGet]
         [Route("Data")]
-        public string[] DataStats()
+        public IHttpActionResult DataStats()
         {            
-            return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.json");
+            var di = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+            return Ok(di.GetFiles("*.json"));
         }
     }
 }
