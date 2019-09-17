@@ -12,6 +12,8 @@ namespace OffLeaseOnly
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
+            var config = GlobalConfiguration.Configuration;
+            config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
         }
     }
 }
