@@ -36,7 +36,7 @@ namespace OffLeaseOnly.Controllers
             var web = new HtmlWeb();
             List<string> makes = null;
 
-            int max = 180;
+            int max = 200;
             for (int i = 1; i < max; i++)
             {
                 var doc = web.Load(string.Format(URL, i));
@@ -52,7 +52,8 @@ namespace OffLeaseOnly.Controllers
                     try
                     {
                         var car = GetCar(veh, makes);
-                        cars.Add(car);
+                        if (!cars.Any(c => c.vin == car.vin))
+                            cars.Add(car);
                         count--;
                         if (count == 0) break;
                     }
