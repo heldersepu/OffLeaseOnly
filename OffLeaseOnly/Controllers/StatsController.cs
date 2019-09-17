@@ -38,7 +38,7 @@ namespace OffLeaseOnly.Controllers
             var di = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
             return Ok(di.GetFiles("*.json")
                         .Select((file, index) =>
-                            new { file.Name, file.Lenght }));
+                            new { file.Name, file.Length }));
         }
     }
 }
