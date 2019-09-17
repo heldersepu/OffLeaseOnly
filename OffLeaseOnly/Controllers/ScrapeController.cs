@@ -30,7 +30,7 @@ namespace OffLeaseOnly.Controllers
             return start;
         }
 
-        public CarStats Get(int count = -1)
+        public CarStats Get()
         {
             var cars = new List<Car>();
             var web = new HtmlWeb();
@@ -54,12 +54,9 @@ namespace OffLeaseOnly.Controllers
                         var car = GetCar(veh, makes);
                         if (!cars.Any(c => c.vin == car.vin))
                             cars.Add(car);
-                        count--;
-                        if (count == 0) break;
                     }
                     catch { }
                 }
-                if (count == 0) break;
             }
 
             if (cars.Count > 0)
@@ -74,7 +71,7 @@ namespace OffLeaseOnly.Controllers
             var bodyContainer = vehNode.ChildNode("div", "container", 0);
             if (header != null && bodyContainer != null)
             {
-                car.vin = header.ChildNode("span", null, 1)?.InnerText.Replace("VIN", "").Replace("#", "").Trim();                
+                car.vin = header.ChildNode("span", null, 1)?.InnerText.Replace("VIN", "").Replace("#", "").Trim();
                 car.stock = header.ChildNode("span", "stock")?.InnerText.Replace("Stock", "").Replace("#", "").Trim();
 
                 car.price = Int32.Parse(bodyContainer.ChildNode("div", "value")?.InnerText?.Replace(",", "")?.Replace("$", ""));
@@ -82,7 +79,7 @@ namespace OffLeaseOnly.Controllers
                 car.mileage = Int32.Parse(bodyContainer.ChildNode("tr", "mileage")?.ChildNode("td")?.InnerText?.Replace(",",""));
                 car.eng = bodyContainer.ChildNode("tr", "engine")?.ChildNode("td")?.InnerText;
                 car.color = bodyContainer.ChildNode("tr", "exterior-color")?.ChildNode("td")?.InnerText;
-                
+
                 car.location = vehNode.ChildNode("div", "location")?.ChildNode("span")?.GetAttributeValue("class", "");
                 // var vPhoto = vehNode.ChildNode("div", "vehicle-photo");
                 // if (vPhoto != null)
@@ -90,7 +87,7 @@ namespace OffLeaseOnly.Controllers
                 //     car.image = vPhoto.ChildNode("img")?.GetAttributeValue("rel", "");
                 //     car.link = DOMAIN + vPhoto.ChildNode("a")?.GetAttributeValue("href", "");
                 // }
-                
+
                 var title = header.ChildNode("div", "title")?.ChildNode("a")?.InnerText;
                 var objT = title.Split(' ');
                 car.year = Int32.Parse(objT[0]);
