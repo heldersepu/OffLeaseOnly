@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web.Http;
 
@@ -27,6 +29,13 @@ namespace OffLeaseOnly.Controllers
         {
             var prices = Prices.Data.Select(x => new { date = x.prices.OrderBy(y => y.date).FirstOrDefault().date.ToString("yyyy-MM-dd") });
             return prices.GroupBy(x => x.date).ToDict();
+        }
+
+        [HttpGet]
+        [Route("Data")]
+        public string[] DataStats()
+        {            
+            return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.json");
         }
     }
 }
