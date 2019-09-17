@@ -36,15 +36,15 @@ namespace OffLeaseOnly.Controllers
             var web = new HtmlWeb();
             List<string> makes = null;
 
-            int max = 5;
+            int max = 180;
             for (int i = 1; i < max; i++)
             {
                 var doc = web.Load(string.Format(URL, i));
                 if (i == 1)
                 {
                     makes = doc.DocumentNode.ChildNode("div", "search-by-make").GetOptionValues(1);
-                    string maxpage = doc.DocumentNode.ChildNode("div", "current-page").InnerText;
-                    max = int.Parse(maxpage.Split(';').Last()) + 1;
+                    //string maxpage = doc.DocumentNode.ChildNode("div", "breadcrumb-paging-secondary").InnerText;
+                    //max = int.Parse(maxpage.Split(';').Last()) + 1;
                 }
                 var vehicles = doc.DocumentNode.ChildNodes("div", "vehicle-listing");
                 foreach (var veh in vehicles)
@@ -69,40 +69,37 @@ namespace OffLeaseOnly.Controllers
         private Car GetCar(HtmlNode vehNode, List<string> makes)
         {
             var car = new Car();
-            var firObj = vehNode.ChildNode("div", "first-half");
-            var secObj = vehNode.ChildNode("div", "second-half");
-            if (firObj != null && secObj != null)
+            var header = vehNode.ChildNode("div", "header");
+            var bodyContainer = vehNode.ChildNode("div", "container", 0);
+            if (header != null && bodyContainer != null)
             {
-                var vinContainer = secObj.ChildNode("div", "container", 2);
-                if (vinContainer != null)
-                {
-                    car.vin = vinContainer.ChildNode("span", "spec-data")?.InnerText;
-                    var title = vehNode.ChildNode("div", "vehicle-title-wrap")?.ChildNode("h6")?.InnerText;
-                    car.price = Int32.Parse(vehNode.ChildNode("span", "pricing-ourprice", 2)?.InnerText?.Replace(",", "")?.Replace("$", ""));
+                car.vin = header.ChildNode("span", null, 1)?.InnerText.Replace("VIN", "").Replace("#", "").Trim();                
+                car.stock = header.ChildNode("span", "stock")?.InnerText.Replace("Stock", "").Replace("#", "").Trim();
 
-                    car.trans = firObj.ChildNode("div", "container", 0)?.ChildNode("span", "spec-data")?.InnerText;
-                    car.mileage = Int32.Parse(firObj.ChildNode("div", "container", 1)?.ChildNode("span", "spec-data")?.InnerText?.Replace(",",""));
-                    car.eng = firObj.ChildNode("div", "container", 2)?.ChildNode("span", "spec-data")?.InnerText;
-                    car.color = secObj.ChildNode("div", "container", 0)?.ChildNode("span", "spec-data")?.InnerText;
-                    car.stock = secObj.ChildNode("div", "container", 1)?.ChildNode("span", "spec-data")?.InnerText;
-                    car.location = vehNode.ChildNode("div", "location")?.ChildNode("span")?.GetAttributeValue("class", "");
-                    var vPhoto = vehNode.ChildNode("div", "vehicle-photo");
-                    if (vPhoto != null)
-                    {
-                        car.image = vPhoto.ChildNode("img")?.GetAttributeValue("rel", "");
-                        car.link = DOMAIN + vPhoto.ChildNode("a")?.GetAttributeValue("href", "");
-                    }
+                car.price = Int32.Parse(bodyContainer.ChildNode("div", "value")?.InnerText?.Replace(",", "")?.Replace("$", ""));
+                car.trans = bodyContainer.ChildNode("tr", "transmission")?.ChildNode("td")?.InnerText;
+                car.mileage = Int32.Parse(bodyContainer.ChildNode("tr", "mileage")?.ChildNode("td")?.InnerText?.Replace(",",""));
+                car.eng = bodyContainer.ChildNode("tr", "engine")?.ChildNode("td")?.InnerText;
+                car.color = bodyContainer.ChildNode("tr", "exterior-color")?.ChildNode("td")?.InnerText;
+                
+                car.location = vehNode.ChildNode("div", "location")?.ChildNode("span")?.GetAttributeValue("class", "");
+                // var vPhoto = vehNode.ChildNode("div", "vehicle-photo");
+                // if (vPhoto != null)
+                // {
+                //     car.image = vPhoto.ChildNode("img")?.GetAttributeValue("rel", "");
+                //     car.link = DOMAIN + vPhoto.ChildNode("a")?.GetAttributeValue("href", "");
+                // }
+                
+                var title = header.ChildNode("div", "title")?.ChildNode("a")?.InnerText;
+                var objT = title.Split(' ');
+                car.year = Int32.Parse(objT[0]);
+                string txt = title.Substring(4).Trim();
+                car.make = makes.Where(make => txt.StartsWith(make)).FirstOrDefault();
+                car.model = txt.Replace(car.make, "").Trim();
 
-                    var objT = title.Split(' ');
-                    car.year = Int32.Parse(objT[0]);
-                    string txt = title.Substring(4).Trim();
-                    car.make = makes.Where(make => txt.StartsWith(make)).FirstOrDefault();
-                    car.model = txt.Replace(car.make, "").Trim();
-
-                    string comments = vehNode.ChildNode("div", "vehicle-comments")?.InnerText;
-                    if (!string.IsNullOrEmpty(comments))
-                        car.cleanCarFax = comments.ToUpper().Contains("CLEAN CARFAX") ? 1: 0;
-                }
+                string comments = vehNode.ChildNode("div", "vehicle-comments")?.InnerText;
+                if (!string.IsNullOrEmpty(comments))
+                    car.cleanCarFax = comments.ToUpper().Contains("CLEAN CARFAX") ? 1: 0;
             }
             return car;
         }
