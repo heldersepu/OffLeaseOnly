@@ -24,7 +24,7 @@ namespace OffLeaseOnly.Controllers
             var makes = doc.DocumentNode.ChildNode("div", "search-by-make").GetOptionValues(1);
             while (i < 200)
             {
-                for (int j = 1; j < 5; j++)
+                for (int j = 1; j < 8; j++)
                 {
                     tasks.Add(web.LoadFromWebAsync(string.Format(URL, i++)));
                 }
