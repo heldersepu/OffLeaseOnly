@@ -27,7 +27,7 @@ namespace OffLeaseOnly
             var options = new List<string>();
             foreach (var opt in node.ChildNodes("option")?.Skip(count))
             {
-                string txt = opt.NextSibling.InnerText;
+                string txt = opt.InnerText;
                 int pos = txt.IndexOf('(');
                 if (pos > 0)
                     txt = txt.Substring(0, pos);
