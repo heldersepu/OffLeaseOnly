@@ -43,6 +43,7 @@ namespace OffLeaseOnly.Controllers
                         catch { }
                     }
                 }
+                tasks.Clear();
             }
 
             if (cars.Count > 0)
