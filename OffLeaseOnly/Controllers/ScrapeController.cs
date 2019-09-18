@@ -13,49 +13,35 @@ namespace OffLeaseOnly.Controllers
         const string DOMAIN = "http://www.offleaseonly.com";
         const string URL = DOMAIN + "/used-cars/type_used/page_{0}/";
 
-        public bool Post()
+        public async Task<CarStats> Get()
         {
-            bool start = true;
-            var allfiles = Directory.GetFiles(Cars.BaseDir, Cars.FilesPath);
-            foreach (var path in allfiles)
-            {
-                if (File.GetLastWriteTime(path) > DateTime.Now.AddHours(-2))
-                {
-                    start = false;
-                    break;
-                }
-            }
-            if (start)
-                Task.Factory.StartNew(() => Get());
-            return start;
-        }
-
-        public CarStats Get()
-        {
+            var tasks = new List<Task<HtmlDocument>>();
             var cars = new List<Car>();
             var web = new HtmlWeb();
-            List<string> makes = null;
+            int i = 1;
 
-            int max = 200;
-            for (int i = 1; i < max; i++)
+            var doc = web.Load(string.Format(URL, 1));
+            var makes = doc.DocumentNode.ChildNode("div", "search-by-make").GetOptionValues(1);
+            while (i < 200)
             {
-                var doc = web.Load(string.Format(URL, i));
-                if (i == 1)
+                for (int j = 1; j < 5; j++)
                 {
-                    makes = doc.DocumentNode.ChildNode("div", "search-by-make").GetOptionValues(1);
-                    //string maxpage = doc.DocumentNode.ChildNode("div", "breadcrumb-paging-secondary").InnerText;
-                    //max = int.Parse(maxpage.Split(';').Last()) + 1;
+                    tasks.Add(web.LoadFromWebAsync(string.Format(URL, i++)));
                 }
-                var vehicles = doc.DocumentNode.ChildNodes("div", "vehicle-listing");
-                foreach (var veh in vehicles)
+                foreach (var task in tasks)
                 {
-                    try
+                    doc = await task;
+                    var vehicles = doc.DocumentNode.ChildNodes("div", "vehicle-listing");
+                    foreach (var veh in vehicles)
                     {
-                        var car = GetCar(veh, makes);
-                        if (!cars.Any(c => c.vin == car.vin))
-                            cars.Add(car);
+                        try
+                        {
+                            var car = GetCar(veh, makes);
+                            if (!cars.Any(c => c.vin == car.vin))
+                                cars.Add(car);
+                        }
+                        catch { }
                     }
-                    catch { }
                 }
             }
 
