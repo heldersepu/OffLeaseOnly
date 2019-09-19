@@ -28,7 +28,7 @@ namespace OffLeaseOnly.Controllers
         public IHttpActionResult AddedStats()
         {
             var prices = Prices.Data.Select(x => new { date = x.prices.OrderBy(y => y.date).FirstOrDefault().date.ToString("yyyy-MM-dd") });
-            return Ok(prices.GroupBy(x => x.date).ToDict().OrderByDescending(i => i.Key)).ToDict();
+            return Ok(prices.GroupBy(x => x.date).ToDict();
         }
 
         [HttpGet]
