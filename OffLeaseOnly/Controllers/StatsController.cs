@@ -28,7 +28,7 @@ namespace OffLeaseOnly.Controllers
         public Dictionary<string, int> AddedStats()
         {
             var prices = Prices.Data.Select(x => new { date = x.prices.OrderBy(y => y.date).FirstOrDefault().date.ToString("yyyy-MM-dd") });
-            return prices.GroupBy(x => x.date).ToDict();
+            return prices.GroupBy(x => x.date).ToDict().OrderByDescending(i => i.Key);
         }
 
         [HttpGet]
