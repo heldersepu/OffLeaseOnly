@@ -9,11 +9,8 @@
         public string color;
         public string trans;
         public string stock;
-        public string image;
-        public string link;
         public string location;
 
-        public int cleanCarFax = 0;
         public int mileage;
         public int price;
         public int year;
@@ -27,16 +24,14 @@
                 color.Replace(",", ";") + "," +
                 trans.Replace(",", ";") + "," +
                 stock.Replace(",", ";") + "," +
-                cleanCarFax.ToString() + "," +
                 mileage.ToString() + "," +
                 price.ToString() + "," +
-                year.ToString() + "," +
-                link;
+                year.ToString();
         }
 
         public static string CsvHeaders()
         {
-            return "vin,eng,make,model,color,trans,stock,cleanCarFax,mileage,price,year,link";
+            return "vin,eng,make,model,color,trans,stock,mileage,price,year";
         }
     }
 }

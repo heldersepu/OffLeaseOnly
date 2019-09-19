@@ -80,17 +80,11 @@ namespace OffLeaseOnly.Controllers
 
                 car.price = Int32.Parse(bodyContainer.ChildNode("div", "value")?.InnerText?.Replace(",", "")?.Replace("$", ""));
                 car.trans = bodyContainer.ChildNode("tr", "transmission")?.ChildNode("td")?.InnerText;
-                car.mileage = Int32.Parse(bodyContainer.ChildNode("tr", "mileage")?.ChildNode("td")?.InnerText?.Replace(",",""));
+                car.mileage = Int32.Parse(bodyContainer.ChildNode("tr", "mileage")?.ChildNode("td")?.InnerText?.Replace(",", ""));
                 car.eng = bodyContainer.ChildNode("tr", "engine")?.ChildNode("td")?.InnerText;
                 car.color = bodyContainer.ChildNode("tr", "exterior-color")?.ChildNode("td")?.InnerText;
 
                 car.location = vehNode.ChildNode("div", "location")?.ChildNode("span")?.GetAttributeValue("class", "");
-                // var vPhoto = vehNode.ChildNode("div", "vehicle-photo");
-                // if (vPhoto != null)
-                // {
-                //     car.image = vPhoto.ChildNode("img")?.GetAttributeValue("rel", "");
-                //     car.link = DOMAIN + vPhoto.ChildNode("a")?.GetAttributeValue("href", "");
-                // }
 
                 var title = header.ChildNode("div", "title")?.ChildNode("a")?.InnerText;
                 var objT = title.Split(' ');
@@ -100,8 +94,6 @@ namespace OffLeaseOnly.Controllers
                 car.model = txt.Replace(car.make, "").Trim();
 
                 string comments = vehNode.ChildNode("div", "vehicle-comments")?.InnerText;
-                if (!string.IsNullOrEmpty(comments))
-                    car.cleanCarFax = comments.ToUpper().Contains("CLEAN CARFAX") ? 1: 0;
             }
             return car;
         }

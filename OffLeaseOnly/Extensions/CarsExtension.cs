@@ -12,7 +12,6 @@ namespace OffLeaseOnly
         {
             var obj = new CarStats();
 
-            obj.cleanCarFax = cars.GroupBy(x => x.cleanCarFax).ToDict();
             obj.year = cars.GroupBy(x => x.year).ToDict();
             obj.eng = cars.GroupBy(x => x.eng).ToDict();
             obj.make = cars.GroupBy(x => x.make).ToDict();
