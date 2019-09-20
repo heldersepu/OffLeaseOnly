@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.Http;
+using WebApi.OutputCache.V2;
 
 namespace OffLeaseOnly.Controllers
 {
     [RoutePrefix("api/Stats")]
+    [CacheOutput(ClientTimeSpan = 3600, ServerTimeSpan = 3600)]
     public class StatsController : ApiController
     {
         [HttpGet]

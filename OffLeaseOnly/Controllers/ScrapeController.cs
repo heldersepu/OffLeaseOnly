@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using WebApi.OutputCache.V2;
 
 namespace OffLeaseOnly.Controllers
 {
@@ -30,6 +31,7 @@ namespace OffLeaseOnly.Controllers
             return start;
         }
 
+        [CacheOutput(ClientTimeSpan = 3600, ServerTimeSpan = 3600)]
         public async Task<CarStats> Get()
         {
             var tasks = new List<Task<HtmlDocument>>();
