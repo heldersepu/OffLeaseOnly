@@ -25,10 +25,10 @@ namespace OffLeaseOnly.Controllers
 
         [HttpGet]
         [Route("Additions")]
-        public IHttpActionResult AddedStats()
+        public Dictionary<string, int> AddedStats()
         {
             var prices = Prices.Data.Select(x => new { date = x.prices.OrderBy(y => y.date).FirstOrDefault().date.ToString("yyyy-MM-dd") });
-            return Ok(prices.GroupBy(x => x.date).ToDict());
+            return prices.OrderByDescending(y => y.date).GroupBy(x => x.date).ToDict();
         }
 
         [HttpGet]
