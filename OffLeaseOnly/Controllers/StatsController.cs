@@ -27,9 +27,9 @@ namespace OffLeaseOnly.Controllers
 
         [HttpGet]
         [Route("Additions")]
-        public Dictionary<string, int> AddedStats()
+        public Dictionary<string, int> AddedStats(string dateFormat="yyyy-MM-dd")
         {
-            var prices = Prices.Data.Select(x => new { date = x.prices.OrderBy(y => y.date).FirstOrDefault().date.ToString("yyyy-MM-dd") });
+            var prices = Prices.Data.Select(x => new { date = x.prices.OrderBy(y => y.date).FirstOrDefault().date.ToString(dateFormat) });
             return prices.OrderByDescending(y => y.date).GroupBy(x => x.date).ToDict();
         }
 
