@@ -43,7 +43,7 @@ namespace OffLeaseOnly.Controllers
             var makes = doc.DocumentNode.ChildNode("div", "search-by-make").GetOptionValues(1);
             while (i < 200)
             {
-                for (int j = 1; j < 8; j++)
+                for (int j = 0; j < 9; j++)
                 {
                     tasks.Add(web.LoadFromWebAsync(string.Format(URL, i++)));
                 }
@@ -53,13 +53,9 @@ namespace OffLeaseOnly.Controllers
                     var vehicles = doc.DocumentNode.ChildNodes("div", "vehicle-listing");
                     foreach (var veh in vehicles)
                     {
-                        try
-                        {
-                            var car = GetCar(veh, makes);
-                            if (!cars.Any(c => c.vin == car.vin))
-                                cars.Add(car);
-                        }
-                        catch { }
+                        var car = GetCar(veh, makes);
+                        if (!cars.Any(c => c.vin == car.vin))
+                            cars.Add(car);
                     }
                 }
                 tasks.Clear();
