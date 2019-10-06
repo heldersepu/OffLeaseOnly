@@ -25,7 +25,7 @@ namespace OffLeaseOnly.Controllers
                 var response = Request.CreateResponse(HttpStatusCode.Accepted);
                 var uri = Request.RequestUri;
                 response.Headers.Add("location", $"{uri.Scheme}://{uri.Host}/api/Scrape/");
-                response.Headers.Add("retry-after", "30");
+                response.Headers.Add("retry-after", "15");
                 return response;
             }
         }
