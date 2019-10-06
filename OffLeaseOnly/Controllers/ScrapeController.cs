@@ -1,38 +1,65 @@
 ﻿using HtmlAgilityPack;
+using Swagger.Net.Annotations;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using WebApi.OutputCache.V2;
 
 namespace OffLeaseOnly.Controllers
 {
+    [CacheOutput(ClientTimeSpan = 10, ServerTimeSpan = 10)]
     public class ScrapeController : ApiController
     {
         const string DOMAIN = "http://www.offleaseonly.com";
         const string URL = DOMAIN + "/used-cars/type_used/page_{0}/";
+        private static DateTime? startTime = null;
+        private static CarStats data;
 
-        public bool Post()
+        private HttpResponseMessage runningResponse
         {
-            bool start = true;
-            var allfiles = Directory.GetFiles(Cars.BaseDir, Cars.FilesPath);
-            foreach (var path in allfiles)
-            {
-                if (File.GetLastWriteTime(path) > DateTime.Now.AddHours(-2))
-                {
-                    start = false;
-                    break;
-                }
+            get {
+                var response = Request.CreateResponse(HttpStatusCode.Accepted);
+                var uri = Request.RequestUri;
+                response.Headers.Add("location", $"{uri.Scheme}://{uri.Host}/api/Scrape/");
+                response.Headers.Add("retry-after", "30");
+                return response;
             }
-            if (start)
-                Task.Factory.StartNew(() => Get());
-            return start;
         }
 
-        [CacheOutput(ClientTimeSpan = 3600, ServerTimeSpan = 3600)]
-        public async Task<CarStats> Get()
+        [SwaggerResponse(HttpStatusCode.Accepted, "Starting job")]
+        public HttpResponseMessage Post()
+        {
+            if (startTime == null)
+            {
+                data = null;
+                startTime = DateTime.Now;
+                Task.Factory.StartNew(() => doWork());
+            }
+            return runningResponse;
+        }
+
+        [SwaggerResponse(HttpStatusCode.OK, "The job has completed")]
+        [SwaggerResponse(HttpStatusCode.Accepted, "The job is still running")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "No job exists with the specified id")]
+        public HttpResponseMessage Get()
+        {
+            if (data != null && startTime != null)
+            {
+                var time = startTime.Diff();
+                startTime = null;
+                return Request.CreateResponse(HttpStatusCode.OK, new { time, data });
+            }
+            else if (startTime != null)
+                return runningResponse;
+            else
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "No job running");
+        }
+
+        private async void doWork()
         {
             var tasks = new List<Task<HtmlDocument>>();
             var cars = new List<Car>();
@@ -63,7 +90,7 @@ namespace OffLeaseOnly.Controllers
 
             if (cars.Count > 0)
                 cars.Save(2);
-            return cars.Statistics();
+            data = cars.Statistics();
         }
 
         private Car GetCar(HtmlNode vehNode, List<string> makes)
