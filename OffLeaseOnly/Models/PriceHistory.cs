@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace OffLeaseOnly
@@ -23,6 +24,7 @@ namespace OffLeaseOnly
             }
 
             public int price;
+            [JsonConverter(typeof(CustomDateTimeConverter))]
             public DateTime date;
         }
     }
