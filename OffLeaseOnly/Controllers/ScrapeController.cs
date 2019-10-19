@@ -114,7 +114,7 @@ namespace OffLeaseOnly.Controllers
                 var title = header.ChildNode("div", "title")?.ChildNode("a")?.InnerText;
                 var objT = title.Split(' ');
                 car.year = Int32.Parse(objT[0]);
-                string txt = title.Substring(4).Trim();
+                string txt = title.Substring(4).Trim().ToLower();
                 car.make = makes.Where(make => txt.StartsWith(make)).FirstOrDefault();
                 car.model = txt.Replace(car.make, "").Trim();
 

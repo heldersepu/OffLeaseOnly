@@ -31,7 +31,7 @@ namespace OffLeaseOnly
                 int pos = txt.IndexOf('(');
                 if (pos > 0)
                     txt = txt.Substring(0, pos);
-                options.Add(txt.Trim());
+                options.Add(txt.Trim().ToLower());
             }
             return options;
         }
