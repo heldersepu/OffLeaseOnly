@@ -27,7 +27,7 @@ namespace OffLeaseOnly.Controllers
         {
             var cars = Cars.Data.Where(x => x.vin.Contains(vin));
             var prices = Prices.Data.Where(x => x.vin.Contains(vin));
-            return cars.Select(c => new CarData() { car = c, value = prices.First(x => x.vin == c.vin) });
+            return cars.Select(c => new CarData(c, prices.First(x => x.vin == c.vin)));
         }
 
         // GET: api/Cars/new
@@ -38,15 +38,13 @@ namespace OffLeaseOnly.Controllers
             var prices = Prices.Data
                 .Where(x => x.prices.Count == 1)
                 .Select(x => new { x.vin, x.prices.OrderByDescending(y => y.date).FirstOrDefault().date });
-            var recent10 = prices.OrderByDescending(y => y.date).Take(100);
+            var recent10 = prices.OrderByDescending(y => y.date).Take(400);
 
             foreach (var p in recent10)
             {
-                obj.Add(new CarData()
-                {
-                    car = Cars.Data.Where(x => x.vin == p.vin).FirstOrDefault(),
-                    value = Prices.Data.Where(x => x.vin == p.vin).FirstOrDefault()
-                });
+                var c = Cars.Data.Match(p.vin);
+                if (c != null)
+                    obj.Add(new CarData(c, Prices.Data.Match(p.vin)));
             }
             return obj.Where(query).Skip(skip).Take(take);
         }
@@ -57,15 +55,13 @@ namespace OffLeaseOnly.Controllers
         {
             var obj = new List<CarData>();
             var prices = Prices.Data.Select(x => new { x.vin, x.prices.OrderBy(y => y.date).FirstOrDefault().date });
-            var oldest = prices.Where(x => Cars.Data.Any(c => c.vin == x.vin)).OrderBy(y => y.date).Take(100);
+            var oldest = prices.Where(x => Cars.Data.Any(c => c.vin == x.vin)).OrderBy(y => y.date).Take(400);
 
             foreach (var p in oldest)
             {
-                obj.Add(new CarData()
-                {
-                    car = Cars.Data.Where(x => x.vin == p.vin).FirstOrDefault(),
-                    value = Prices.Data.Where(x => x.vin == p.vin).FirstOrDefault()
-                });
+                var c = Cars.Data.Match(p.vin);
+                if (c != null)
+                    obj.Add(new CarData(c, Prices.Data.Match(p.vin)));
             }
             return obj.Where(query).Skip(skip).Take(take);
         }
@@ -75,15 +71,13 @@ namespace OffLeaseOnly.Controllers
         public IEnumerable<CarData> GetHot(string query = "car.year>0", int skip = 0, int take = 10)
         {
             var obj = new List<CarData>();
-            var hot = Prices.Data.Where(x => x.prices.Count > 1 && Cars.Data.Any(c => c.vin == x.vin)).Take(100);
+            var hot = Prices.Data.Where(x => x.prices.Count > 1 && Cars.Data.Any(c => c.vin == x.vin)).Take(400);
 
             foreach (var p in hot)
             {
-                obj.Add(new CarData()
-                {
-                    car = Cars.Data.Where(x => x.vin == p.vin).FirstOrDefault(),
-                    value = Prices.Data.Where(x => x.vin == p.vin).FirstOrDefault()
-                });
+                var c = Cars.Data.Match(p.vin);
+                if (c != null)
+                    obj.Add(new CarData(c, Prices.Data.Match(p.vin)));
             }
             return obj.Where(query).Skip(skip).Take(take);
         }
