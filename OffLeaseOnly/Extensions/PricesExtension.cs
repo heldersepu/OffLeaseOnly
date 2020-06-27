@@ -23,5 +23,10 @@ namespace OffLeaseOnly
                 serializer.Serialize(file, prices);
             }
         }
+
+        public static PriceHistory Match(this List<PriceHistory> prices, string vin)
+        {
+            return prices.Where(x => x.vin == vin).FirstOrDefault();
+        }
     }
 }

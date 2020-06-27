@@ -44,6 +44,11 @@ namespace OffLeaseOnly
             AddPrices(cars);
         }
 
+        public static Car Match(this List<Car> cars, string vin)
+        {
+            return cars.Where(x => x.vin == vin).FirstOrDefault();
+        }
+
         private static void AddPrices(List<Car> cars)
         {
             var prices = Prices.Data;
