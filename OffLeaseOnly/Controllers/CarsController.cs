@@ -71,7 +71,9 @@ namespace OffLeaseOnly.Controllers
         public IEnumerable<CarData> GetHot(string query = "car.year>0", int skip = 0, int take = 10)
         {
             var obj = new List<CarData>();
-            var hot = Prices.Data.Where(x => x.prices.Count > 1 && Cars.Data.Any(c => c.vin == x.vin)).Take(400);
+            var hot = Prices.Data.Where(x => x.prices.Count > 1 && Cars.Data.Any(c => c.vin == x.vin))
+                                 .OrderBy(y => (x.prices.First().price - x.prices.Last().price));
+                                 .Take(400);
 
             foreach (var p in hot)
             {
