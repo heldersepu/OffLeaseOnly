@@ -72,8 +72,7 @@ namespace OffLeaseOnly.Controllers
         {
             var obj = new List<CarData>();
             var hot = Prices.Data.Where(x => x.prices.Count > 1 && Cars.Data.Any(c => c.vin == x.vin))
-                                 .OrderBy(y => (x.prices.First().price - x.prices.Last().price));
-                                 .Take(400);
+                                 .OrderByDescending(y => (x.prices.First().price - x.prices.Last().price)).Take(400);
 
             foreach (var p in hot)
             {
